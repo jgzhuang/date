@@ -103,25 +103,23 @@ namespace date {
      * 3/6/9 digits for fraction if second is presented. If only minute is
      * presented each adds 3 digits for fraction, and if only hour is presented
      * each addes 6 digits for fraction.
-     * If there is a demand to specify the number of digits, we could use the 
-     * reserved field. 
      */ 
     struct Extra
     {
-      // FIXME: should we use comma by default? ISO8601:2004 prefers comma
-      uint8_t _useComma : 1; // 1 means using comma as decimal mark, 0 means using dot as decimal mark
+      // ISO8601:2004 prefers comma (,) as the decimal sign over full stop (.)
+      uint8_t _useDot : 1; // 1 means using full stop (.) as decimal mark, 0 means using dot as decimal mark
       uint8_t _omitT : 1;  // Whether timeonly will have leading T
-      uint8_t _basicDatetime : 1; // Basic format with no separators
+      uint8_t _basicDateTime : 1; // Basic format with no separators
       uint8_t _basicOffset : 1; // Whether has separator in Offset type
       uint8_t _dummy : 4; 
 
       Extra() 
-        : _useComma(0), _omitT(0), _basicDatetime(0), _basicOffset(0), _dummy(0)
+        : _useDot(0), _omitT(0), _basicDateTime(0), _basicOffset(0), _dummy(0)
       {
       }
 
       Extra(bool uc_, bool nlt_, bool bd_, bool bo_)
-        : _useComma(uc_), _omitT(nlt_), _basicDatetime(bd_), _basicOffset(bo_), _dummy(0)
+        : _useDot(uc_), _omitT(nlt_), _basicDateTime(bd_), _basicOffset(bo_), _dummy(0)
       {
       }
       
@@ -137,9 +135,25 @@ namespace date {
     {
     }
 
+    ISO8601Format(DateTime dt_)
+      : _datetime(dt_), _offset(Offset::hm), _reserved(0)
+    {
+    }
+
+    ISO8601Format(DateTime dt_, Offset o_)
+      : _datetime(dt_), _offset(o_), _reserved(0)
+    {
+    }
+
     ISO8601Format(DateTime dt_, Offset o_, Extra ef_)
       : _datetime(dt_), _offset(o_), _extra(ef_), _reserved(0)
     {
+    }
+
+    ISO8601Format& dateTime(DateTime datetime_)
+    {
+      _datetime = datetime_;
+      return *this;
     }
 
     ISO8601Format& offset(Offset offset_)
@@ -147,22 +161,22 @@ namespace date {
       _offset = offset_;
       return *this;
     }
-    ISO8601Format& useComma(bool uc_)
+    ISO8601Format& useDot(bool uc_)
     {
-      _extra._useComma = uc_;
+      _extra._useDot = uc_;
       return *this;
     }
-    ISO8601Format& basicDatetime(bool bd_)
+    ISO8601Format& basicDateTime(bool bd_)
     {
-      _extra._basicDatetime = bd_;
+      _extra._basicDateTime = bd_;
       return *this;
     }
   };
 
   inline bool operator==(const ISO8601Format::Extra& lhs_, const ISO8601Format::Extra& rhs_)
   {
-    return lhs_._useComma == rhs_._useComma && lhs_._omitT == rhs_._omitT 
-      && lhs_._basicDatetime == rhs_._basicDatetime 
+    return lhs_._useDot == rhs_._useDot && lhs_._omitT == rhs_._omitT
+      && lhs_._basicDateTime == rhs_._basicDateTime 
       && lhs_._basicOffset == rhs_._basicOffset && lhs_._dummy == rhs_._dummy;
   }
 

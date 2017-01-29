@@ -254,7 +254,7 @@ namespace detail {
         // output the fraction part
         if (p < e)
         {
-          *p = format_._extra._useComma ? ',' : '.';
+          *p = format_._extra._useDot ? '.' : ',';
         }
         ++p;
 #ifdef _WIN32
@@ -735,11 +735,11 @@ namespace {
 
     if (p < e)
     {
-      bool frComma = (',' == *p);
+      bool useDot = ('.' == *p);
 
-      if (('.' == *p) || frComma)
+      if ((',' == *p) || useDot)
       {
-        fmt_._extra._useComma = frComma;
+        fmt_._extra._useDot = useDot;
 
         ++p;
         int64_t v;
